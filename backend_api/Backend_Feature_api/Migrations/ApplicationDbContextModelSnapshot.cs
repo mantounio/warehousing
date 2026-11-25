@@ -148,13 +148,13 @@ namespace Backend_Feature_api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1f161384-0cbc-4509-9014-fd09afbaa165",
+                            Id = "937ae7b3-defd-4959-b045-ed13ca57637a",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "47b1df59-a482-4dc8-96cf-d6f46d30d2ac",
+                            Id = "b3b4c669-eaa4-432e-9449-dfcf24b53e3a",
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -281,6 +281,9 @@ namespace Backend_Feature_api.Migrations
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Previous_Quantity")
+                        .HasColumnType("int");
 
                     b.Property<string>("Price")
                         .IsRequired()

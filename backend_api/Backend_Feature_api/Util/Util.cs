@@ -29,5 +29,15 @@ namespace Backend_Feature_api.Util
 
 			return (final, final.Replace(",", "_"));
 		}
+
+		public static string Bind_To_WareHouse(string category)
+		{
+			return category switch
+			{
+				"Electronics" => "Main Warehouse",
+				"Accessories" => "East Warehouse",
+				"Office Supplies" => "West Warehouse"
+			};
+		}
 	}
 }

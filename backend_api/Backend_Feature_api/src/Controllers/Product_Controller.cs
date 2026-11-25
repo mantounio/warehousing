@@ -23,7 +23,7 @@ namespace Backend_Feature_api.src.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetAll([FromQuery] ProductQueryObject query)
         {
             if (!ModelState.IsValid)

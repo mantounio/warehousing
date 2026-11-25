@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 
 namespace Backend_Feature_api.Util
 {
@@ -38,6 +39,18 @@ namespace Backend_Feature_api.Util
 				"Accessories" => "East Warehouse",
 				"Office Supplies" => "West Warehouse"
 			};
+		}
+
+		public static string Get_Date_Time()
+		{
+			DateTime now = DateTime.Now;
+			PersianCalendar persian_cal = new();
+
+			int year = persian_cal.GetYear(now);
+			int month = persian_cal.GetMonth(now);
+			int day = persian_cal.GetDayOfMonth(now);
+
+			return $"{year}-{month}-{day} {now.ToString("H:m")}";
 		}
 	}
 }

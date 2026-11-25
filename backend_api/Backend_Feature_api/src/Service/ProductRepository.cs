@@ -54,17 +54,12 @@ namespace Backend_Feature_api.src.Service
 
                 await _context.SaveChangesAsync();
 
-                DateTime now = DateTime.Now;
-                PersianCalendar persian_cal = new();
-
-                int year = persian_cal.GetYear(now);
-                int month = persian_cal.GetMonth(now);
-                int day = persian_cal.GetDayOfMonth(now);
+                
 
                 var movement = new CreateMovementDTO
                 {
                     ProductName = product.ProductName,
-                    Datetime = $"{year}-{month}-{day} {now.ToString("H:m")}",
+                    Datetime = Utils.Get_Date_Time(),
                     Quantity = product.Quantity,
                     Type = "+In",
                     warehouse = Utils.Bind_To_WareHouse(product.Category)// |||||| implement this later ||||||

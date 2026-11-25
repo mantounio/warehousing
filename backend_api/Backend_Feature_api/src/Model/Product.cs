@@ -14,10 +14,12 @@ public class Product
     [Required]
     public string Category { get; set; } = string.Empty;
     [Required]
-    public int Quantity { get; set; }
+    public int Current_Quantity{ get; set; }
     [Required]
     //[Column(TypeName = "decimal(18,2)")]
     public string Price { get; set; }
     [Required]
     public string Status { get; set; } = string.Empty;
+    [Required]
+    public int Previous_Quantity { get; set; } = 0;
 }

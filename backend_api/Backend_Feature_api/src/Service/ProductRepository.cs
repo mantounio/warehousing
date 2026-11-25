@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Price_Mapper = Backend_Feature_api.Util.Util;
 using warehouse.Models;
+using System.Globalization;
 
 namespace Backend_Feature_api.src.Service
 {
@@ -32,17 +33,19 @@ namespace Backend_Feature_api.src.Service
             {
                 var product = productDTO.ToProduct();
 
-                if (product.Quantity >= 1 && product.Quantity <= 100)
+                if (product.Current_Quantity >= 1 && product.Current_Quantity <= 100)
                     product.Status = "Low Stock";
-                else if (product.Quantity >= 101 && product.Quantity <= 500)
+                else if (product.Current_Quantity >= 101 && product.Current_Quantity <= 500)
                     product.Status = "Average Stock";
-                else if (product.Quantity > 500)
+                else if (product.Current_Quantity > 500)
                     product.Status = "High Stock";
 						
 					product.Code = $"TEMP-{Guid.NewGuid():N}";
 
                 product.Price = Price_Mapper.ConvertTo_Formal_Price(productDTO.Price).comma_format;
-
+                product.Previous_Quantity = 0; 
+                product.Current_Quantity = productDTO.Quantity;
+                
 
 				await _context.product.AddAsync(product);
                 await _context.SaveChangesAsync();
@@ -51,14 +54,21 @@ namespace Backend_Feature_api.src.Service
 
                 await _context.SaveChangesAsync();
 
+                DateTime now = DateTime.Now;
+                PersianCalendar persian_cal = new();
+
+                int year = persian_cal.GetYear(now);
+                int month = persian_cal.GetMonth(now);
+                int day = persian_cal.GetDayOfMonth(now);
+
                 var movement = new CreateMovementDTO
                 {
                     ProductName = product.ProductName,
-                    Datetime = DateTime.Now.ToString("HH:MM"),
-                    Quantity = 10,
-                    Type = "yo",
-                    warehouse = "yo"
-                };
+                    Datetime = $"{year}-{month}-{day} {now.ToString("H:m")}",
+                    Quantity = product.Current_Quantity,
+                    Type = "+In",
+                    warehouse = "yo" // |||||| implement this later ||||||
+				};
 
                 await _movementRepo.CreateAsync(movement);
 
@@ -98,7 +108,7 @@ namespace Backend_Feature_api.src.Service
 
             if (query.Quantity.HasValue)
             {
-                Products = Products.Where(p => p.Quantity == query.Quantity.Value);
+                Products = Products.Where(p => p.Current_Quantity == query.Quantity.Value);
             }
 
             if (query.Price.HasValue)
@@ -135,7 +145,7 @@ namespace Backend_Feature_api.src.Service
             {
                 if (query.SortBy.Equals("Stock", StringComparison.OrdinalIgnoreCase))
                 {
-                    Products = query.isDecsending ? Products.OrderByDescending(s => s.Quantity) : Products.OrderBy(s => s.Quantity);
+                    Products = query.isDecsending ? Products.OrderByDescending(s => s.Current_Quantity) : Products.OrderBy(s => s.Current_Quantity);
                 }
 
                 if (query.SortBy.Equals("Price", StringComparison.OrdinalIgnoreCase))
@@ -166,7 +176,8 @@ namespace Backend_Feature_api.src.Service
             old_product.Price = productDTO.Price;
             old_product.ProductName = productDTO.ProductName;
             old_product.Status = productDTO.Status;
-            old_product.Quantity = productDTO.Quantity;
+            old_product.Previous_Quantity = old_product.Current_Quantity;
+            old_product.Current_Quantity = productDTO.Quantity;
 			old_product.Category = productDTO.Category;
 
             await _context.SaveChangesAsync();

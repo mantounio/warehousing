@@ -3,6 +3,12 @@ using System.Text;
 
 namespace Backend_Feature_api.Util
 {
+	public enum Movement_T
+	{
+		IN,
+		OUT,
+		NULL,
+	}
 	public static class Util
 	{
 		public static (string comma_format, string underscore_format) ConvertTo_Formal_Price(string value)
@@ -51,6 +57,25 @@ namespace Backend_Feature_api.Util
 			int day = persian_cal.GetDayOfMonth(now);
 
 			return $"{year}-{month}-{day} {now.ToString("H:m")}";
+		}
+
+		public static (string move_quantity,Movement_T move_T) Set_Movement_Type(int old_quantity,int current_quantity)
+		{
+			if (current_quantity >= old_quantity)
+				return ((current_quantity - old_quantity).ToString(), Movement_T.IN);
+			else if (current_quantity < old_quantity)
+				return ((current_quantity - old_quantity).ToString(), Movement_T.OUT);
+
+			return (null, Movement_T.NULL)!;
+		}
+
+		public static string Convert_Movement_string(Movement_T type)
+		{
+			return type switch
+			{
+				Movement_T.IN => "+In",
+				Movement_T.OUT => "-Out",
+			};
 		}
 	}
 }

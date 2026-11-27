@@ -61,8 +61,8 @@ namespace Backend_Feature_api.src.Service
                     ProductName = product.ProductName,
                     Datetime = Utils.Get_Date_Time(),
                     Quantity = product.Quantity,
-                    Type = "+In",
-                    warehouse = Utils.Bind_To_WareHouse(product.Category)// |||||| implement this later ||||||
+                    Type = "+In", // HEREREREREERERERERE
+                    warehouse = Utils.Bind_To_WareHouse(product.Category)
 				};
 
                 await _movementRepo.CreateAsync(movement);
@@ -177,14 +177,16 @@ namespace Backend_Feature_api.src.Service
 
             await _context.SaveChangesAsync();
 
-            var movement = new CreateMovementDTO
+			var Type_Quantity = Utils.Set_Movement_Type(old_product.Previous_Quantity, old_product.Quantity);
+
+			var movement = new CreateMovementDTO
             {
-                Datetime = DateTime.Now.ToString("HH:mm"),
+                Datetime = Utils.Get_Date_Time(),
                 ProductName = old_product.ProductName,
-                Quantity = 100,
-                Type = "doesn't have any substutie",
-                warehouse = "empty"
-            };
+                Quantity = int.Parse(Type_Quantity.move_quantity),
+                Type = Utils.Convert_Movement_string(Type_Quantity.move_T),
+                warehouse = Utils.Bind_To_WareHouse(old_product.Category)
+			};
             await _movementRepo.CreateAsync(movement);
 
             return old_product;

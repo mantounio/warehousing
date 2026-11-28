@@ -168,14 +168,20 @@ namespace Backend_Feature_api.src.Service
             if (old_product == null)
                 return null;
 
-            old_product.Price = productDTO.Price;
-            old_product.ProductName = productDTO.ProductName;
-            old_product.Status = productDTO.Status;
+            old_product.Price = Utils.ConvertTo_Formal_Price(productDTO.Price).comma_format;
+			old_product.ProductName = productDTO.ProductName;
             old_product.Previous_Quantity = old_product.Quantity;
             old_product.Quantity = productDTO.Quantity;
 			old_product.Category = productDTO.Category;
 
-            await _context.SaveChangesAsync();
+			if (old_product.Quantity >= 1 && old_product.Quantity <= 100)
+				old_product.Status = "Low Stock";
+			else if (old_product.Quantity >= 101 && old_product.Quantity <= 500)
+				old_product.Status = "Average Stock";
+			else if (old_product.Quantity > 500)
+				old_product.Status = "High Stock";
+
+			await _context.SaveChangesAsync();
 
 			var Type_Quantity = Utils.Set_Movement_Type(old_product.Previous_Quantity, old_product.Quantity);
 
